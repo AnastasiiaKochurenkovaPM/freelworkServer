@@ -8,10 +8,17 @@
     position: sticky;
     top: 0;
     z-index: 999;
+    transition: 0.5s all ease;
 
     &.active{
         background-color: white;
         color: black;
+
+        button {
+            background-color: white !important;
+            color: #480238 !important;
+            border: 1px solid #480238 !important;
+        }
     }
 
     .container{

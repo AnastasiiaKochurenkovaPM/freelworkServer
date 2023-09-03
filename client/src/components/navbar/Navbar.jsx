@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react" 
-import {Link, useLocation} from "react-router-dom"
+import {Link, useLocation, useNavigate} from "react-router-dom"
 import "./Navbar.scss"
+import newRequest from "../../utils/newRequest";
 
 const Navbar = () => {
 
@@ -21,10 +22,18 @@ const Navbar = () => {
     }
   }, []);
 
-  const currentUser = {
-    id:1,
-    username:"John Doe",
-    isSeller:true
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"))
+
+  const navigate = useNavigate()
+
+  const handleLogout = async ()=>{
+    try {
+      await newRequest.post("/auth/logout")
+      localStorage.setItem("currentUser", null)
+      navigate("/")
+    } catch (error) {
+      console.log(err)
+    }
   }
 
   return (
@@ -40,12 +49,18 @@ const Navbar = () => {
           <span>Freelwork Business</span>
           <span>Explore</span>
           <span>English</span>
-          <span>Sing in</span>
           {!currentUser?.isSeller && <span>Become a Seller</span>}
-          {!currentUser && <button>Join</button>}
+          <Link to="/login" className="link">Sing in</Link>
+          {!currentUser && 
+          <Link className="link" to="/register">
+            <button>Join</button> 
+          </Link>}
           {currentUser && (
             <div className="user" onClick={()=>setOpen(!open)}>
-              <img src="https://static.vecteezy.com/system/resources/previews/005/544/718/original/profile-icon-design-free-vector.jpg" alt=""/>
+              <img 
+                src={currentUser.img || "https://static.vecteezy.com/system/resources/previews/005/544/718/original/profile-icon-design-free-vector.jpg"} 
+                alt=""
+              />
               <span>{currentUser?.username}</span>
              {open && <div className="options">
                 {currentUser?.isSeller && (
@@ -56,7 +71,7 @@ const Navbar = () => {
                   )}
                 <Link className="link" to="/orders">Orders</Link>
                 <Link className="link" to="/messages">Messages</Link>
-                <Link className="link" to="/">Logout</Link>
+                <Link className="link" onClick={handleLogout}>Logout</Link>
               </div>}
             </div>
           )}

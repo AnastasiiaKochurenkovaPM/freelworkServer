@@ -9,17 +9,31 @@ import Orders from "./pages/orders/Orders"
 import Messages from "./pages/messeges/Messages"
 import Message from "./pages/message/Message"
 import MyGigs from "./pages/myGigs/MyGigs"
+import Login from "./pages/login/Login"
+import Register from "./pages/register/Register"
+import Success from "./pages/success/Success"
+import Pay from "./pages/pay/Pay"
 import {createBrowserRouter, RouterProvider, Outlet} from "react-router-dom"
 import "./app.scss"
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from '@tanstack/react-query'
+
 
 function App() {
+  
+  const queryClient = new QueryClient()
 
   const Layout = ()=>{
     return(
       <div className="app">
+        <QueryClientProvider client={queryClient}>
         <Navbar/>
         <Outlet/>
         <Footer/>
+        </QueryClientProvider>
       </div>
     )
   }
@@ -60,6 +74,22 @@ function App() {
         {  
           path:"/message/:id",
           element: <Message/>
+        },
+        {
+          path: "/register",
+          element: <Register />,
+        },
+        {
+          path: "/login",
+          element: <Login />,
+        },
+        {
+          path: "/pay/:id",
+          element: <Pay />,
+        },
+        {
+          path: "/success",
+          element: <Success />,
         },
       ]
     }
