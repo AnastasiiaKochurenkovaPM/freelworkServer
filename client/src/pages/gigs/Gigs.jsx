@@ -27,8 +27,6 @@ const Gigs = () => {
       })
   })
 
-  console.log(data)
-
   const reSort = (type) => {
     setSort(type)
     setOpen(false)
@@ -45,7 +43,7 @@ const Gigs = () => {
   return (
     <div className='gigs'>
       <div className="container">
-        <span className="breadcrumbs">FREELWORK > GRAPHICS & DESIGN ></span>
+        <span className="breadcrumbs">FREELWORK  {'>'}  GRAPHICS & DESIGN  {'>'} </span>
         <h1>AI Artists</h1>
         <p>Explore the boundaries of art and technology with Freelwork's AI artists</p>
         <div className="menu">

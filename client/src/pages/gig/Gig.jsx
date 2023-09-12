@@ -1,75 +1,121 @@
 import React from 'react'
 import "./Gig.scss"
 import { Slider } from "infinite-react-carousel/lib";
+import {useParams} from "react-router-dom"
+import {useQuery} from "@tanstack/react-query"
+import newRequest from "../../utils/newRequest"
+import Reviews from '../../components/reviews/Reviews';
 
 const Gig = () => {
+
+  const {id} = useParams()
+
+  const { isLoading, error, data } = useQuery({
+    queryKey: ["gig"],
+    queryFn: () =>
+      newRequest
+      .get(
+        `/gigs/single/${id}`
+      )
+      .then((res)=>{
+        return res.data
+      })
+  })
+
+  const userId = data?.userId;
+
+  const { 
+    isLoading: isLoadingUser, 
+    error: errorUser, 
+    data: dataUser 
+  } = useQuery({
+    queryKey: ["user"],
+    queryFn: () =>
+      newRequest
+      .get(
+        `/users/${userId}`
+      )
+      .then((res)=>{
+        return res.data
+      }),
+      enabled: !!userId,
+  })
+
   return (
     <div className='gig'>
-      <div className="container">
+      {isLoading ? (
+      "loading" 
+      ) : (
+       error ) ? (
+       "Something went wrong!" ) : ( 
+       <div className="container">
         <div className="left">
           <span className="breadCrumbs">
-            FIVERR > GRAPHICS & DESIGN >
+            FIVERR {">"} GRAPHICS & DESIGN {">"}
           </span>
-          <h1>I will create ai generated art for you</h1>
-
+          <h1>{data.title}</h1>
+          {isLoadingUser ? (
+              "loading"
+            ) : errorUser ? (
+              "Something went wrong!"
+            ) : (
           <div className="user">
-            <img className="pp" src="https://images.pexels.com/photos/1771383/pexels-photo-1771383.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="" />
-            <span>Lannie Coleman</span>
-            <div className="stars">
-              <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" />
-              <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" />
-              <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" />
-              <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" />
-              <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" />
-              <span>5</span>
-            </div>
-          </div>
+            <img
+              className="pp"
+              src={dataUser.img || "/img/noavatar.jpg"}
+              alt=""
+            />
+            
+            <span>{dataUser.username}</span>
+                {!isNaN(data.totalStars / data.starNumber) && (
+                  <div className="stars">
+                    {Array(Math.round(data.totalStars / data.starNumber))
+                      .fill()
+                      .map((item, i) => (
+                        <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" key={i} />
+                      ))}
+                    <span>{Math.round(data.totalStars / data.starNumber)}</span>
+                  </div>
+                )}
+              </div>
+            )}
+          
           <Slider slidesToShow={1} arrowsScroll={1} className="slider">
-          <img
-            src="https://images.pexels.com/photos/1074535/pexels-photo-1074535.jpeg?auto=compress&cs=tinysrgb&w=1600"
-            alt=""
-          />
-          <img
-            src="https://images.pexels.com/photos/1462935/pexels-photo-1462935.jpeg?auto=compress&cs=tinysrgb&w=1600"
-            alt=""
-          />
-          <img
-            src="https://images.pexels.com/photos/1054777/pexels-photo-1054777.jpeg?auto=compress&cs=tinysrgb&w=1600"
-            alt=""
-          />
+              {data.images.map((img) => (
+                <img key={img} src={img} alt="" />
+              ))}
           </Slider>
 
           <h2>About This Gig</h2>
           <p>
-            I use an AI program to create images based on text prompts. This
-            means I can help you to create a vision you have through a textual
-            description of your scene without requiring any reference images.
-            Some things I've found it often excels at are: Character portraits
-            (E.g. a picture to go with your DnD character) Landscapes (E.g.
-            wallpapers, illustrations to compliment a story) Logos (E.g. Esports
-            team, business, profile picture) You can be as vague or as
-            descriptive as you want. Being more vague will allow the AI to be
-            more creative which can sometimes result in some amazing images. You
-            can also be incredibly precise if you have a clear image of what you
-            want in mind. All of the images I create are original and will be
-            found nowhere else. If you have any questions you're more than
-            welcome to send me a message.
+            {data.desc}
           </p>
 
-          <div className="seller">
+          { isLoadingUser ? (
+              "loading"
+            ) : errorUser ? (
+              "Something went wrong!"
+            ) : ( 
+            <div className="seller">
             <h2>About The Seller</h2>
             <div className="user">
-              <img src="https://images.pexels.com/photos/1771383/pexels-photo-1771383.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="" />
+            <img
+              className="pp"
+              src={dataUser.img || "/img/noavatar.jpg"}
+              alt=""
+            />
               <div className="info">
-                <span>Lannie Coleman</span>
-                <div className="stars">
-                  <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" />
-                  <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" />
-                  <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" />
-                  <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" />
-                  <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" />
-                  <span>5</span>
-                </div>
+                <span>{dataUser.username}</span>
+                {!isNaN(data.totalStars / data.starNumber) && (
+                  <div className="stars">
+                    {Array(Math.round(data.totalStars / data.starNumber))
+                      .fill()
+                      .map((item, i) => (
+                        <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" key={i} />
+                      ))}
+                    <span>{Math.round(data.totalStars / data.starNumber)}</span>
+                  </div>
+                )}
                 <button>Contact Me</button>
               </div>
             </div>
@@ -77,7 +123,7 @@ const Gig = () => {
               <div className="items">
                 <div className="item">
                   <span className="title">From</span>
-                  <span className="desc">USA</span>
+                  <span className="desc">{dataUser.country}</span>
                 </div>
                 <div className="item">
                   <span className="title">Member since</span>
@@ -98,164 +144,45 @@ const Gig = () => {
               </div>
               <hr />
               <p>
-                My name is Anna, I enjoy creating AI generated art in my spare
-                time. I have a lot of experience using the AI program and that
-                means I know what to prompt the AI with to get a great and
-                incredibly detailed result.
+                {dataUser.desc}
               </p>
             </div>
           </div>
-          <div className="reviews">
-            <h2>Reviews</h2>
-            <div className="item">
-              <div className="user">
-                <img className="pp" src="https://images.pexels.com/photos/839586/pexels-photo-839586.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="" />
-                <div className="info">
-                  <span>John Holl</span>
-                  <div className="country">
-                    <img src="https://fiverr-dev-res.cloudinary.com/general_assets/flags/1f1fa-1f1f8.png" alt="" />
-                    <span>United States</span>
-                  </div>
-                </div>
-              </div>
-              <div className="stars">
-                  <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" />
-                  <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" />
-                  <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" />
-                  <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" />
-                  <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" />
-                  <span>5</span>
-              </div>
-              <p>
-              I just want to say that art_with_ai was the first, and after
-              this, the only artist Ill be using on Fiverr. Communication was
-              amazing, each and every day he sent me images that I was free to
-              request changes to. They listened, understood, and delivered
-              above and beyond my expectations. I absolutely recommend this
-              gig, and know already that Ill be using it again very very soon
-              </p>
-              <div className="helpful">
-                <span>Helpful?</span>
-                <img className='like' src="https://logowik.com/content/uploads/images/940_like_icon.jpg" alt="" />
-                <span>Yes</span>
-                <img className='dislike' src="https://cdn-icons-png.flaticon.com/512/126/126504.png" alt="" />
-                <span>No</span>
-              </div>
-            </div>
-            <hr />
-            <div className="item">
-              <div className="user">
-                <img className="pp" src="https://images.pexels.com/photos/839586/pexels-photo-839586.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="" />
-                <div className="info">
-                  <span>John Holl</span>
-                  <div className="country">
-                    <img src="https://fiverr-dev-res.cloudinary.com/general_assets/flags/1f1fa-1f1f8.png" alt="" />
-                    <span>United States</span>
-                  </div>
-                </div>
-              </div>
-              <div className="stars">
-                  <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" />
-                  <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" />
-                  <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" />
-                  <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" />
-                  <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" />
-                  <span>5</span>
-              </div>
-              <p>
-              I just want to say that art_with_ai was the first, and after
-              this, the only artist Ill be using on Fiverr. Communication was
-              amazing, each and every day he sent me images that I was free to
-              request changes to. They listened, understood, and delivered
-              above and beyond my expectations. I absolutely recommend this
-              gig, and know already that Ill be using it again very very soon
-              </p>
-              <div className="helpful">
-                <span>Helpful?</span>
-                <img className='like' src="https://logowik.com/content/uploads/images/940_like_icon.jpg" alt="" />
-                <span>Yes</span>
-                <img className='dislike' src="https://cdn-icons-png.flaticon.com/512/126/126504.png" alt="" />
-                <span>No</span>
-              </div>
-            </div>
-            <hr />
-            <div className="item">
-              <div className="user">
-                <img className="pp" src="https://images.pexels.com/photos/839586/pexels-photo-839586.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="" />
-                <div className="info">
-                  <span>John Holl</span>
-                  <div className="country">
-                    <img src="https://fiverr-dev-res.cloudinary.com/general_assets/flags/1f1fa-1f1f8.png" alt="" />
-                    <span>United States</span>
-                  </div>
-                </div>
-              </div>
-              <div className="stars">
-                  <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" />
-                  <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" />
-                  <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" />
-                  <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" />
-                  <img src="https://img.freepik.com/free-vector/start_53876-25533.jpg?w=2000" alt="" />
-                  <span>5</span>
-              </div>
-              <p>
-              I just want to say that art_with_ai was the first, and after
-              this, the only artist Ill be using on Fiverr. Communication was
-              amazing, each and every day he sent me images that I was free to
-              request changes to. They listened, understood, and delivered
-              above and beyond my expectations. I absolutely recommend this
-              gig, and know already that Ill be using it again very very soon
-              </p>
-              <div className="helpful">
-                <span>Helpful?</span>
-                <img className='like' src="https://logowik.com/content/uploads/images/940_like_icon.jpg" alt="" />
-                <span>Yes</span>
-                <img className='dislike' src="https://cdn-icons-png.flaticon.com/512/126/126504.png" alt="" />
-                <span>No</span>
-              </div>
-            </div>
-          </div>
+        )}
+      
+        <Reviews gigId={id}/>
+
         </div>
         <div className="right">
           <div className="price">
-            <h3>1 AI generated image</h3>
-            <h2>$ 59.99</h2>
+            <h3>{data.shortTitle}</h3>
+            <h2>$ {data.price}</h2>
           </div>
           <p>
-            I will create a unique high quality AI generated image based on a
-            description that you give me
+            {data.shortDesc}
           </p>
           <div className="details">
             <div className="item">
               <img src="https://github.com/safak/youtube23/blob/fiverr-ui/public/img/clock.png?raw=true" alt="" />
-              <span>2 Days Delivery</span>
+              <span>{data.deliveryDate} Days Delivery</span>
             </div>
             <div className="item">
               <img src="https://github.com/safak/youtube23/blob/fiverr-ui/public/img/recycle.png?raw=true" alt="" />
-              <span>3 Revisions</span>
+              <span>{data.revisionNumber} Revisions</span>
             </div>
           </div>
           <div className="features">
-            <div className="item">
-              <img src="https://github.com/safak/youtube23/blob/fiverr-ui/public/img/greencheck.png?raw=true" alt="" />
-              <span>Prompt writing</span>
-            </div>
-            <div className="item">
-              <img src="https://github.com/safak/youtube23/blob/fiverr-ui/public/img/greencheck.png?raw=true" alt="" />
-              <span>Artwork delivery</span>
-            </div>
-            <div className="item">
-              <img src="https://github.com/safak/youtube23/blob/fiverr-ui/public/img/greencheck.png?raw=true" alt="" />
-              <span>Image upscaling</span>
-            </div>
-            <div className="item">
-              <img src="https://github.com/safak/youtube23/blob/fiverr-ui/public/img/greencheck.png?raw=true" alt="" />
-              <span>Additional design</span>
-            </div>
+            {data.features.map((feature) => (
+                <div className="item" key={feature}>
+                  <img src="https://github.com/safak/youtube23/blob/fiverr-ui/public/img/greencheck.png?raw=true" alt="" />
+                  <span>{feature}</span>
+                </div>
+            ))}
           </div>
-          <button>Continue</button>
+            <button>Continue</button>
         </div>
       </div>
+      )}
     </div>
   )
 }

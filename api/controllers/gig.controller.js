@@ -30,6 +30,7 @@ export const deleteGig = async (req,res, next)=>{
         console.log(error)
     }
 }
+
 export const getGig = async (req,res, next)=>{
     try {
         const gig = await Gig.findById(req.params.id)
@@ -39,6 +40,7 @@ export const getGig = async (req,res, next)=>{
         next(error)
     }
 }
+
 export const getGigs = async (req,res, next)=>{
     const q = req.query
 

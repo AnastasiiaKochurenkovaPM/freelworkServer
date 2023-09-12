@@ -10,16 +10,13 @@ const GigCard = ({item}) => {
     const { isLoading, error, data } = useQuery({
         queryKey: [item.userId],
         queryFn: () =>
-          newRequest
-          .get(
+          newRequest.get(
             `/users/${item.userId}`
           )
           .then((res)=>{
             return res.data
           }),
       })
-
-    console.log(data)
 
   return (
     <Link to={`/gig/${item._id}`} className='link'>
